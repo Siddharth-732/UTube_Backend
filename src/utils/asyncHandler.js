@@ -12,15 +12,18 @@
     // const asyncHandler = (fnc)=>{()=>{}}
         // const asyncHandler = (fnc)=>async ()=>{}
             
-            const asyncHandler = (fn) =>async (req, res, next)=>{
+            const asyncHandler = (fn) => async (req, res, next) => {
+                console.log("TYPE OF NEXT:", typeof next);
                 try {
-                    await fn(req,res,next)
+                    await fn(req, res, next);
                 } catch (error) {
-                    res.status(error.code || 500).json({
+                    console.error("ERROR:", error);
+            
+                    res.status(error.statusCode || 500).json({
                         success: false,
-                        message: error.message
-                    })
+                        message: error.message || "Internal Server Error"
+                    });
                 }
-                
-            }
-            export {asyncHandler}
+            };
+            
+            export { asyncHandler };

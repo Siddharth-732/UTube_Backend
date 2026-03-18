@@ -5,29 +5,34 @@ import { cloudinaryUpload } from "../utils/cloudinary.js"
 import { upload } from "../middlewares/multer.middleware.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 
-const registerUser = asyncHandler(async (req, res) => {
+const registerUser = asyncHandler(async (req, res, next) => {
     // get User detail from the frontend
     // check if the user already exist: username and email
     // get Avatar, image
     // upload them to cloudinary, avatar
     // Add the username, password and EmailID in the DB.
     const { username, email, password, fullname } = req.body
-    console.log("email :", email);
+    console.log("email1 :", email);
+    console.log("fullanme :", fullname);
+    console.log("password :", password);
+    console.log("username :", username);
     if ([username, email, password, fullname].some((
         field) => (field?.trim() === ''))
     ) {
         throw new ApiError(400, "All fields are required");
     }
 
-    const existedUser = User.findOne({
+    const existedUser =await User.findOne({
         $or: [{ username }, { email }]
     })
 
     if (existedUser) {
         throw new ApiError(409, "User already exist with the current username or email");
     }
-    const avatarLocalPath = req.files?.avatar[0]?.path;
-    const coverImageLocalPath = req.files?.coverImage[0]?.path;
+    const avatarLocalPath = req.files?.avatar?.[0]?.path;
+    const coverImageLocalPath = req.files?.coverImage?.[0]?.path;
+
+   
 
     if (!avatarLocalPath) {
         throw new ApiError(400, "Avatar file is required")
@@ -54,7 +59,7 @@ const registerUser = asyncHandler(async (req, res) => {
     )
 
     if (!createdUser) {
-        throw new ApiError(500, "Something went wrong while registering the user")
+        throw new ApiError(504, "Something went wrong while registering the user")
     }
 
     return res.status(201).json(
