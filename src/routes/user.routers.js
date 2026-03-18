@@ -5,16 +5,17 @@ import { upload } from "../middlewares/multer.middleware.js";
 const router = Router();
 // console.log("registeredUser is",typeof registerUser);
 router.route("/register").post(
-    upload.fields([
-        {
-            name: "avatar",
-            maxCount: 1
-        },
-        {
-            name: "coverImage",
-            maxCount: 1
-        }
-    ]),
-    registerUser)
+  upload.fields([
+    {
+      name: "avatar",
+      maxCount: 1,
+    },
+    {
+      name: "coverImage",
+      maxCount: 1,
+    },
+  ]),
+  registerUser
+);
 // router.post("/register", registerUser);
-export default router
+export default router;
