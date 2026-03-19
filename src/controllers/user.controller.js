@@ -107,34 +107,59 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new ApiError(401, "Invalid username credentials");
   }
 
-  const {accessToken, refreshToken}=await generatedAccessAndRefreshToken(user._id);
-  const loggedInUser=await User.findById(user._id).select("-password -refreshToken");
+  const { accessToken, refreshToken } = await generatedAccessAndRefreshToken(
+    user._id
+  );
+  const loggedInUser = await User.findById(user._id).select(
+    "-password -refreshToken"
+  );
 
-  const options ={
+  const options = {
     httpOnly: true,
-    secure: true
-  }
+    secure: true,
+  };
 
   return res
-  .status(200)
-  .cookie("accessToken",accessToken, options)
-  .cookie("refreshToken",refreshToken, options)
-  .json(
-    new ApiResponse(200,
-      {
-        user: loggedInUser, accessToken, refreshToken
-      },
-      "User logged in successfully"
-    )
-  )
+    .status(200)
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken, options)
+    .json(
+      new ApiResponse(
+        200,
+        {
+          user: loggedInUser,
+          accessToken,
+          refreshToken,
+        },
+        "User logged in successfully"
+      )
+    );
 });
-const logoutUser = asyncHandler(async(req,res)=>{
+const logoutUser = asyncHandler(async (req, res) => {
+  User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $set: {
+        refreshToken: undefined,
+      },
+    },
+    {
+      new: true,
+    }
+  );
 
-})
+  const options = {
+    httpOnly: true,
+    secure: true,
+  };
+
+  return res
+    .status(200)
+    .clearCookie("accessToken", options)
+    .clearCookie("refreshToken", options)
+    .json(new ApiResponse(200, {}, "User Logged Out"));
+});
 
 // console.log(typeof registerUser);
 
-export { registerUser,
-      loginUser,
-      logoutUser
-};
+export { registerUser, loginUser, logoutUser };
