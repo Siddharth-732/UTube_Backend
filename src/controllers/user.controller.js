@@ -7,6 +7,8 @@ import jwt from "jsonwebtoken"
 import { ApiResponse } from "../utils/ApiResponse.js";
 
 const registerUser = asyncHandler(async (req, res) => {
+  // console.log("This is req.body->>", req.body);
+  
   // get User detail from the frontend
   // check if the user already exist: username and email
   // get Avatar, image
@@ -43,7 +45,7 @@ const registerUser = asyncHandler(async (req, res) => {
   if (!avatar) {
     throw new ApiError(400, "Avatar file is required");
   }
-
+  
   const user = await User.create({
     fullname,
     avatar: avatar.url,
@@ -52,7 +54,8 @@ const registerUser = asyncHandler(async (req, res) => {
     password,
     username: username.toLowerCase(),
   });
-
+  
+  // console.log(user.id);
   const createdUser = await User.findById(user._id).select(
     "-password -refreshToken"
   );
@@ -100,7 +103,7 @@ const loginUser = asyncHandler(async (req, res) => {
     $or: [{ username }, { email }],
   });
 
-  console.log("User data is ->",user);
+  // console.log("User data is ->",user);
 
   if (!user) {
     throw new ApiError(404, "User does not exist");
@@ -140,6 +143,8 @@ const loginUser = asyncHandler(async (req, res) => {
     );
 });
 const logoutUser = asyncHandler(async (req, res) => {
+  // console.log(req.user._id);
+  
   User.findByIdAndUpdate(
     req.user._id,
     {

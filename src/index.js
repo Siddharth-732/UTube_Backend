@@ -15,3 +15,22 @@ connectDB()
   .catch((err) => {
     console.log("MONGO db connection failed", err);
   });
+
+// Another way of writing this can be--
+
+/*
+  const startServer = async ()=>{
+    try{
+      await connectDB();
+      app.listen(process.env.PORT || 8000, () => 
+        {
+      console.log(`server is running : ${process.env.PORT}`)
+      }
+      )
+    }
+    catch (err){
+      console.log("MONGO db connection failed", err);
+    }
+    }
+    startServer();
+  */
