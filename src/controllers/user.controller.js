@@ -108,7 +108,7 @@ const loginUser = asyncHandler(async (req, res) => {
   if (!user) {
     throw new ApiError(404, "User does not exist");
   }
-  const isPasswordValid = await user.isPassworCorrect(password);
+  const isPasswordValid = await user.isPasswordCorrect(password);
 
   if (!isPasswordValid) {
     throw new ApiError(401, "Invalid username credentials");
@@ -208,7 +208,50 @@ try {
 }
 )
 
+const changeCurrentPassword = asyncHandler(async(req,res)=>{
+  const {oldPassword, newPassword}=req.body;
 
+  const user = await User.findById(req.user?._id);
+  const isPasswordCorrect=await user.isPasswordCorrect(oldPassword);
+
+  if(!isPasswordCorrect){
+    throw new ApiError(400,"Invalid old password")
+  }
+
+  user.password= newPassword
+  await user.save({validateBeforeSave: false})
+  
+  return res
+  .status(200)
+  .json(new ApiResponse(200, {}, "Password has been change"))
+
+})
+
+const getCurrentUser = asyncHandler(async(req,res)=>{
+  return res.status
+  .json(200, req.user,"Fetched successfully")
+})
+
+
+const updateAccoutDetails = asyncHandler(async(req,res)=>{
+  const {fullname,email}= req.body;
+  if(!fullname || !email){
+    throw new ApiError(400, "All fields are required")
+  }
+  const user=User.findByIdAndUpdate(req.user?._id,
+    {
+      $set:{
+        fullname: fullname,
+        email: email
+      }
+    },
+    {new : true}
+  ).select("-password")
+
+  return res
+  .status(200)
+  .json(new ApiResponse(200, user, "Account Detail has been updated"))
+})
 // console.log(typeof registerUser);
 
-export { registerUser, loginUser, logoutUser,refreshAccessToken };
+export { registerUser, loginUser, logoutUser,refreshAccessToken, changeCurrentPassword, getCurrentUser, updateAccoutDetails};
