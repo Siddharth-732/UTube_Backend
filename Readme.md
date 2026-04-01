@@ -5,7 +5,8 @@
 The goal of this project is to replicate core features of a modern video platform while learning full-stack development, API design, and scalable UI architecture.
 
 ---
-
+This will be the backend repo of this project
+---
 ## 🚀 Features
 
 - 🎥 Video playback interface
